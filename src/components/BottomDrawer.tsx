@@ -1,5 +1,4 @@
 import { useEffect } from "react";
-import { Button } from "./ui/button";
 import {
   DrawerClose,
   DrawerContent,
@@ -15,8 +14,7 @@ import UserCard from "./UserCard";
 const BottomDrawer = () => {
   const dispatch = useAppDispatch();
 
-  const { userData } = useAppSelector((state) => state.user);
-  console.log(userData);
+  const { users } = useAppSelector((state) => state.user);
 
   useEffect(() => {
     console.log("useEffect");
@@ -30,15 +28,14 @@ const BottomDrawer = () => {
         <DrawerDescription>These are the users.</DrawerDescription>
       </DrawerHeader>
       <div className="flex gap-5 p-5 overflow=x-auto">
-        {userData.map((user, index) => (
+        {users.map((user, index) => (
           <UserCard key={index} user={user} />
         ))}
       </div>
 
       <DrawerFooter>
-        <Button>Submit</Button>
         <DrawerClose>
-          <Button variant="outline">Cancel</Button>
+        Cancel
         </DrawerClose>
       </DrawerFooter>
     </DrawerContent>

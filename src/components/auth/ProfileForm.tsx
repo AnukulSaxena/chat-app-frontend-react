@@ -2,8 +2,6 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
-
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -14,35 +12,21 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { createuser } from "@/store/action/user.action";
-import { useAppDispatch } from "@/store/store";
+import { FC } from "react";
+import { formSchema, FormValues } from "@/schemas";
 
-const formSchema = z.object({
-  userName: z.string().min(2, {
-    message: "Username must be at least 2 characters.",
-  }),
-  password: z.string().min(2, {
-    message: "Password must be at least 2 characters.",
-  }),
-});
+interface Props {
+  onSubmit: (values: FormValues) => void;
+}
 
-export function ProfileForm() {
-  const dispatch = useAppDispatch();
-  const form = useForm<z.infer<typeof formSchema>>({
+const ProfileForm: FC<Props> = ({ onSubmit }): JSX.Element => {
+  const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       userName: "",
       password: "",
     },
   });
-
-  // 2. Define a submit handler.
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
-    console.log(values);
-    dispatch(createuser({userName: values.userName, password: values.password}));
-  }
 
   return (
     <Form {...form}>
@@ -84,4 +68,6 @@ export function ProfileForm() {
       </form>
     </Form>
   );
-}
+};
+
+export default ProfileForm;

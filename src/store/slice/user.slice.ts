@@ -2,13 +2,14 @@ import { createSlice } from "@reduxjs/toolkit";
 // import type { PayloadAction } from "@reduxjs/toolkit";
 import { createuser, fetchUsers } from "../action/user.action";
 import { toast } from "sonner";
+import { User } from "@/schemas";
 
 export interface UserState {
-  userData: { userName: string; password: string }[];
+  users: User[];
 }
 
 const initialState: UserState = {
-  userData: [],
+  users: [],
 };
 
 export const userSlice = createSlice({
@@ -26,13 +27,19 @@ export const userSlice = createSlice({
         console.log("sdf ---> ", action.payload);
         toast("Uh oh! Something went wrong.");
       })
-      .addCase(fetchUsers.fulfilled, (state, action) => {
-        state.userData = action.payload.data;
-        console.log("sdf ---> ", action.payload.data);
-      })
+      .addCase(
+        fetchUsers.fulfilled,
+        (state, action) => {
+          state.users = action.payload.data;
+          console.log("sdf ---> ", action.payload.data);
+        }
+      )
       .addCase(fetchUsers.rejected, (_, action) => {
         console.log("sdf ---> ", action.payload);
-        toast("Uh oh! Something went wrong.");
+        if(typeof action.payload === "string")
+          toast(action.payload);
+        else
+          toast("Uh oh! Something went wrong.");
       });
   },
 });
