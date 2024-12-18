@@ -14,6 +14,8 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { createuser } from "@/store/action/user.action";
+import { useAppDispatch } from "@/store/store";
 
 const formSchema = z.object({
   userName: z.string().min(2, {
@@ -25,6 +27,7 @@ const formSchema = z.object({
 });
 
 export function ProfileForm() {
+  const dispatch = useAppDispatch();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -38,6 +41,7 @@ export function ProfileForm() {
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
     console.log(values);
+    dispatch(createuser({userName: values.userName, password: values.password}));
   }
 
   return (
@@ -50,7 +54,7 @@ export function ProfileForm() {
             <FormItem>
               <FormLabel>Username</FormLabel>
               <FormControl>
-                <Input placeholder="shadcn" {...field} />
+                <Input placeholder="Username" {...field} />
               </FormControl>
               {/* <FormDescription>
                 This is your public display name.
@@ -67,7 +71,7 @@ export function ProfileForm() {
             <FormItem>
               <FormLabel>Password</FormLabel>
               <FormControl>
-                <Input placeholder="shadcn" {...field} />
+                <Input placeholder="Password" {...field} />
               </FormControl>
               {/* <FormDescription>
                 This is your public display name.
