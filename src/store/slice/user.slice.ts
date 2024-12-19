@@ -6,10 +6,12 @@ import { User } from "@/schemas";
 
 export interface UserState {
   users: User[];
+  totalPages: number
 }
 
 const initialState: UserState = {
   users: [],
+  totalPages: 0
 };
 
 export const userSlice = createSlice({
@@ -30,7 +32,8 @@ export const userSlice = createSlice({
       .addCase(
         fetchUsers.fulfilled,
         (state, action) => {
-          state.users = action.payload.data;
+          state.users = action.payload.data.users;
+          state.totalPages = action.payload.data.pagination.totalPages;
           console.log("sdf ---> ", action.payload.data);
         }
       )

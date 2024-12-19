@@ -19,9 +19,9 @@ export const createuser = createAsyncThunk(
 
 export const fetchUsers = createAsyncThunk(
   "users/fetch",
-  async (_, { rejectWithValue }) => {
+  async (ownerId : string, { rejectWithValue }) => {
     try {
-      const response = await axios.get("http://localhost:5000/user");
+      const response = await axios.get("http://localhost:5000/user", { params: { ownerId } });
 
       // Validate and parse the response
       return FetchUsersResponseSchema.parse(response.data); // Return validated data

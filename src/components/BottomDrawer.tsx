@@ -13,12 +13,13 @@ import UserCard from "./UserCard";
 
 const BottomDrawer = () => {
   const dispatch = useAppDispatch();
-
+  const {userData} = useAppSelector(state => state.auth);
   const { users } = useAppSelector((state) => state.user);
 
   useEffect(() => {
     console.log("useEffect");
-    dispatch(fetchUsers());
+    if(!userData) return
+    dispatch(fetchUsers(userData._id));
   }, []);
 
   return (
