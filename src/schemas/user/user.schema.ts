@@ -7,7 +7,14 @@ export const UserSchema = z.object({
 });
 
 export const FetchUsersResponseSchema = z.object({
-  data: z.array(UserSchema),
+  data: z.object({
+    users: z.array(UserSchema),
+    pagination: z.object({
+      page: z.number(),
+      limit: z.number(),
+      totalPages: z.number(),
+    }),
+  }),
   message: z.string(),
 });
 

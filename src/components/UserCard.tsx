@@ -6,15 +6,25 @@ import {
   CardFooter,
 } from "@/components/ui/card";
 import { User } from "@/schemas";
+import { createRelationship } from "@/store/action/relationship.action";
+import { useAppDispatch, useAppSelector } from "@/store/store";
 import { FC } from "react";
 import { FaUserPlus, FaUserAstronaut } from "react-icons/fa"; // Importing "Add Friend" icon from react-icons
 
 interface UserCardProps {
-  user: User;
-  onSendRequest: () => void; // Callback to handle sending the request
+  user: User; // Callback to handle sending the request
 }
 
-const UserCard: FC<UserCardProps> = ({ user, onSendRequest }): JSX.Element => {
+const UserCard: FC<UserCardProps> = ({ user }): JSX.Element => {
+  const dispatch = useAppDispatch();
+  const { userData } = useAppSelector((state) => state.auth);
+  if (!userData || userData._id === user._id) return <></>;
+
+  const onSendRequest = () => {
+    dispatch(
+      createRelationship({ fromUserId: userData?._id, toUserId: user._id })
+    );
+  };
   return (
     <Card className="max-w-xs shadow-md">
       <CardHeader>
@@ -23,7 +33,9 @@ const UserCard: FC<UserCardProps> = ({ user, onSendRequest }): JSX.Element => {
           <div>
             <FaUserAstronaut className="text-4xl" />
           </div>
-          <CardTitle className="text-lg font-semibold">{user.userName}</CardTitle>
+          <CardTitle className="text-lg font-semibold">
+            {user.userName}
+          </CardTitle>
         </div>
       </CardHeader>
       <CardContent>
