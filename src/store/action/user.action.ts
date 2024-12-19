@@ -21,6 +21,7 @@ export const fetchUsers = createAsyncThunk(
   "users/fetch",
   async (ownerId : string, { rejectWithValue }) => {
     try {
+      console.log(ownerId)
       const response = await axios.get("http://localhost:5000/user", { params: { ownerId } });
 
       // Validate and parse the response

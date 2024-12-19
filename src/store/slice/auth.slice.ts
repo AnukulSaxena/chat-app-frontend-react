@@ -1,10 +1,10 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { User } from "@/schemas";
+import { LoggedInUser, User } from "@/schemas";
 import { loginUser } from "../action/user.action";
 import { toast } from "sonner";
 
 export interface UserState {
-  userData: User | null;
+  userData: LoggedInUser | null;
 }
 
 const initialState: UserState = {
