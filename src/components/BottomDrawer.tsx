@@ -18,7 +18,6 @@ const BottomDrawer = () => {
   const { users } = useAppSelector((state) => state.user);
 
   useEffect(() => {
-    console.log("useEffect");
     if(!userData) return
     dispatch(fetchUsers(userData._id));
   }, []);
@@ -26,12 +25,12 @@ const BottomDrawer = () => {
   return (
     <DrawerContent className="h-96">
       <DrawerHeader>
-        <DrawerTitle>Users</DrawerTitle>
+        <DrawerTitle className="cursor-pointer" >Users</DrawerTitle>
         <DrawerDescription>These are the users.</DrawerDescription>
       </DrawerHeader>
-      <div className="flex gap-5 p-5 overflow=x-auto">
+      <div className="flex gap-5 p-5 overflow-x-auto">
         {users.map((user, index) => (
-          <UserCard key={index} user={user} />
+          <UserCard key={index}  user={user} />
         ))}
       </div>
 

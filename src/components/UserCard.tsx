@@ -19,6 +19,8 @@ import {
   UpdateRelationStatus,
   UserRelationStatus,
 } from "@/schemas/relation/relation.schema";
+import { DrawerClose } from "./ui/drawer";
+import { createSingleChat } from "@/store/action/chat.action";
 
 interface UserCardProps {
   user: User; // Callback to handle sending the request
@@ -27,7 +29,7 @@ interface UserCardProps {
 const UserCard: FC<UserCardProps> = ({ user }): JSX.Element => {
   const dispatch = useAppDispatch();
   const { userData } = useAppSelector((state) => state.auth);
-  if (!userData || userData._id === user._id ) return <></>;
+  if (!userData || userData._id === user._id) return <></>;
 
   const onSendRequest = () => {
     dispatch(
@@ -36,7 +38,16 @@ const UserCard: FC<UserCardProps> = ({ user }): JSX.Element => {
   };
 
   const handleClick = (status: UpdateRelationStatus) => {
-    dispatch(updateRelationShip({ relationId: user.relationId ? user.relationId : "", status }));
+    dispatch(
+      updateRelationShip({
+        relationId: user.relationId ? user.relationId : "",
+        status,
+      })
+    );
+  };
+
+  const createChat = (userId: string) => {
+    dispatch(createSingleChat({ fromUserId: userData._id, toUserId: userId }));
   };
   return (
     <Card className="min-w-72 shadow-md">
@@ -85,9 +96,11 @@ const UserCard: FC<UserCardProps> = ({ user }): JSX.Element => {
                 <FaUserPlus className="text-xl" />
                 <span>Friend</span>
               </div>
-              <Button className="flex items-center bg-neutral-200 hover:bg-red-300 space-x-2 text-blue-600 hover:text-neutral-800">
-                <span>Unfriend</span>
-              </Button>
+              <DrawerClose
+              onClick={() => createChat(user._id)}
+              className="flex items-center px-4 py-1.5 rounded-md bg-neutral-200 hover:bg-red-300 space-x-2 text-blue-600 hover:text-neutral-800">
+                <span>Create Chat</span>
+              </DrawerClose>
             </>
           )}
 

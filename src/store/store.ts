@@ -2,8 +2,10 @@ import { configureStore } from '@reduxjs/toolkit'
 import { useDispatch, useSelector } from 'react-redux';
 import userReducer from './slice/user.slice'
 import authReducer from './slice/auth.slice'
+import chatReducer from './slice/chat.slice'
 import { FLUSH, PAUSE, PERSIST, persistReducer, persistStore, PURGE, REGISTER, REHYDRATE } from 'redux-persist'
 import storage from 'redux-persist/lib/storage' 
+import { setStore } from '@/utils/interceptor';
 
 const persistConfig = {
   key: 'auth',
@@ -14,7 +16,8 @@ const persistedReducer = persistReducer(persistConfig, authReducer);
 export const store = configureStore({
   reducer: {
     user: userReducer,
-    auth: persistedReducer
+    auth: persistedReducer,
+    chat: chatReducer
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
@@ -23,6 +26,8 @@ export const store = configureStore({
       },
     }),
 })
+
+setStore(store)
 
 export const persistor = persistStore(store);
 

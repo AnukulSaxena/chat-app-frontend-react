@@ -1,4 +1,5 @@
 import { FetchUsersResponseSchema, LoginResponseSchema, User } from "@/schemas";
+import api from "@/utils/interceptor";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 import { z } from "zod";
@@ -19,10 +20,9 @@ export const createuser = createAsyncThunk(
 
 export const fetchUsers = createAsyncThunk(
   "users/fetch",
-  async (ownerId : string, { rejectWithValue }) => {
+  async (ownerId: string, { rejectWithValue }) => {
     try {
-      console.log(ownerId)
-      const response = await axios.get("http://localhost:5000/user", { params: { ownerId } });
+      const response = await api.get("/user", { params: { ownerId } });
 
       // Validate and parse the response
       return FetchUsersResponseSchema.parse(response.data); // Return validated data
@@ -43,11 +43,8 @@ export const loginUser = createAsyncThunk(
   "users/login",
   async (payload: User, { rejectWithValue }) => {
     try {
-      const response = await axios.post(
-        "http://localhost:5000/user/login",
-        payload
-      );
-
+      const response = await api.post(`/user/login`, payload);
+      console.log("res ---> ", response.data);
       return LoginResponseSchema.parse(response.data);
     } catch (error: any) {
       if (error instanceof z.ZodError) {
@@ -55,7 +52,8 @@ export const loginUser = createAsyncThunk(
         return rejectWithValue("Invalid data format received from API.");
       }
       return rejectWithValue(
-        error?.response?.data?.message || "An error occurred while fetching the users"
+        error?.response?.data?.message ||
+          "An error occurred while fetching the users"
       );
     }
   }

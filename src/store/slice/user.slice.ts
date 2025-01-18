@@ -20,13 +20,10 @@ export const userSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
-      .addCase(createuser.fulfilled, (_, action) => {
-        // state.userData.push(action.payload.data);
+      .addCase(createuser.fulfilled, () => {
         toast("Event has been created.");
-        console.log("sdf ---> ", action.payload.message);
       })
-      .addCase(createuser.rejected, (_, action) => {
-        console.log("sdf ---> ", action.payload);
+      .addCase(createuser.rejected, () => {
         toast("Uh oh! Something went wrong.");
       })
       .addCase(
@@ -34,11 +31,9 @@ export const userSlice = createSlice({
         (state, action) => {
           state.users = action.payload.data.users;
           state.totalPages = action.payload.data.pagination.totalPages;
-          console.log("sdf ---> ", action.payload.data);
         }
       )
       .addCase(fetchUsers.rejected, (_, action) => {
-        console.log("sdf ---> ", action.payload);
         if(typeof action.payload === "string")
           toast(action.payload);
         else

@@ -24,7 +24,7 @@ const Header: React.FC = () => {
           )}
           {userData !== null && (
             <>
-              <Button className="bg-neutral-800" onClick={() => dispatch(logout())} >Logout</Button>
+              <Button  onClick={() => dispatch(logout())} >Logout</Button>
               <Drawer>
                 <DrawerTrigger className=" bg-neutral-800 px-4 rounded-md">
                   Users

@@ -27,7 +27,20 @@ export const FetchUsersResponseSchema = z.object({
 });
 
 export const LoginResponseSchema = z.object({
-  data: LoggedInUserSchema,
+  data: z.object({
+    user: LoggedInUserSchema,
+    accessToken : z.string(), 
+    refreshToken : z.string(),
+    sessionId: z.string()
+  }),
+  message: z.string(),
+});
+
+export const RefreshTOkenSchema = z.object({
+  data: z.object({
+    accessToken : z.string(), 
+    refreshToken : z.string(),
+  }),
   message: z.string(),
 });
 

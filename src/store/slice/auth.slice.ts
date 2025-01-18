@@ -5,10 +5,16 @@ import { toast } from "sonner";
 
 export interface UserState {
   userData: LoggedInUser | null;
+  refreshToken: String | null;
+  sessionId: String | null;
+  accessToken: String | null;
 }
 
 const initialState: UserState = {
   userData: null,
+  refreshToken: null,
+  sessionId: null,
+  accessToken: null,
 };
 
 export const authSlice = createSlice({
@@ -18,6 +24,10 @@ export const authSlice = createSlice({
     setUserData: (state, action: PayloadAction<User>) => {
       state.userData = action.payload;
     },
+    setAccessToken: (state, action: PayloadAction<{refreshToken: string, accessToken: string}>) => {
+      state.accessToken = action.payload.accessToken;
+      state.refreshToken = action.payload.refreshToken;
+    },
     logout: (state) => {
       state.userData = null;
     },
@@ -26,7 +36,10 @@ export const authSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(loginUser.fulfilled, (state, action): void => {
-        state.userData = action.payload.data;
+        state.userData = action.payload.data.user;
+        state.refreshToken = action.payload.data.refreshToken;
+        state.sessionId = action.payload.data.sessionId;
+        state.accessToken = action.payload.data.accessToken;
         toast(action.payload.message);
       })
       .addCase(loginUser.rejected, (_, action) => {
