@@ -2,29 +2,25 @@ import Header from "./components/layout/Header";
 import { Toaster } from "./components/ui/sonner";
 import Section from "./components/Section";
 import { ThemeProvider } from "@/components/theme-provider";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { socket } from "./socket";
 import { useAppSelector } from "./store/store";
 
 function App() {
-  const isConnectedRef = useRef(socket.connected);
+  const isConnectedRef = useRef(false);
   const {userData} = useAppSelector(state => state.auth);
   console.log('render')
 
   useEffect(() => {
-    function onConnect() {
+    if(socket && socket.connected){
       isConnectedRef.current = true;
     }
 
-    socket.on("connect", onConnect);
-    return () => {
-      socket.off("connect", onConnect);
-    };
-  }, []);
+  }, [socket]);
 
   useEffect(() => {
     console.log('isConnectedRef', isConnectedRef, userData);
-    if (isConnectedRef && userData) {
+    if (isConnectedRef && userData && socket) {
       console.log("join emitted");
       socket.emit("join", { user: userData._id });
     }
@@ -32,7 +28,7 @@ function App() {
 
   return (
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-      <div className="min-h-screen w-full">
+      <div className="h-screen w-full flex flex-col">
         <Header />
         <Section />
 

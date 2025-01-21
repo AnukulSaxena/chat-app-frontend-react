@@ -34,7 +34,8 @@ export const getUserChats = createAsyncThunk(
         const response = await axios.get(
           `http://localhost:5000/chat/${userId}`
         );
-        return getChatSchema.parse(response?.data);
+        const parsedData = getChatSchema.parse(response?.data);
+        return {data : parsedData.data, userId};
       } catch (error: any) {
         return rejectWithValue(
           error?.response?.data || "An error occurred while fetching the user"

@@ -1,13 +1,13 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { LoggedInUser, User } from "@/schemas";
-import { loginUser } from "../action/user.action";
+import { loginUser, logoutUser } from "../action/user.action";
 import { toast } from "sonner";
 
 export interface UserState {
   userData: LoggedInUser | null;
-  refreshToken: String | null;
-  sessionId: String | null;
-  accessToken: String | null;
+  refreshToken: string | null;
+  sessionId: string | null;
+  accessToken: string | null;
 }
 
 const initialState: UserState = {
@@ -15,6 +15,14 @@ const initialState: UserState = {
   refreshToken: null,
   sessionId: null,
   accessToken: null,
+};
+
+// Centralized reset function
+const resetState = (state: UserState): void => {
+  state.userData = null;
+  state.accessToken = null;
+  state.refreshToken = null;
+  state.sessionId = null;
 };
 
 export const authSlice = createSlice({
@@ -29,7 +37,7 @@ export const authSlice = createSlice({
       state.refreshToken = action.payload.refreshToken;
     },
     logout: (state) => {
-      state.userData = null;
+      resetState(state);
     },
   },
 
@@ -45,6 +53,10 @@ export const authSlice = createSlice({
       .addCase(loginUser.rejected, (_, action) => {
         if (typeof action.payload === "string") toast(action.payload);
         else toast("Uh oh! Something went wrong.");
+      })
+      .addCase(logoutUser.pending, (state): void => {
+        resetState(state);
+        toast("User Logged Out Successfully");
       });
   },
 });

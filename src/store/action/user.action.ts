@@ -58,3 +58,21 @@ export const loginUser = createAsyncThunk(
     }
   }
 );
+
+export const logoutUser = createAsyncThunk(
+  "users/logout",
+  async ({userName, sessionId}: {userName: String, sessionId: String}, { rejectWithValue }) => {
+
+    try {
+      await api.post(`/user/logout`, {
+        sessionId,
+        userName
+      });
+    } catch (error: any) {
+      return rejectWithValue(
+        error?.response?.data?.message ||
+          "An error occurred while fetching the users"
+      );
+    }
+  }
+);
