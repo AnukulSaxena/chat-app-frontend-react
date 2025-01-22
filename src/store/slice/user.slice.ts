@@ -1,4 +1,4 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 // import type { PayloadAction } from "@reduxjs/toolkit";
 import { createuser, fetchUsers } from "../action/user.action";
 import { toast } from "sonner";
@@ -6,18 +6,24 @@ import { User } from "@/schemas";
 
 export interface UserState {
   users: User[];
-  totalPages: number
+  totalPages: number;
+  isSocketConnected: boolean;
 }
 
 const initialState: UserState = {
   users: [],
-  totalPages: 0
+  totalPages: 0,
+  isSocketConnected: false,
 };
 
 export const userSlice = createSlice({
   name: "user",
   initialState,
-  reducers: {},
+  reducers: {
+    setSocketConnected: (state, action: PayloadAction<boolean>) => {
+      state.isSocketConnected = action.payload;
+    }
+  },
   extraReducers: (builder) => {
     builder
       .addCase(createuser.fulfilled, () => {
@@ -43,6 +49,6 @@ export const userSlice = createSlice({
 });
 
 // Action creators are generated for each case reducer function
-export const {} = userSlice.actions;
+export const {setSocketConnected} = userSlice.actions;
 
 export default userSlice.reducer;

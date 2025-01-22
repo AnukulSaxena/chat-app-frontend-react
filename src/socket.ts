@@ -1,5 +1,6 @@
 import { io, Socket } from "socket.io-client";
 import { store } from "./store/store";
+import { setSocketConnected } from "./store/slice/user.slice";
 
 const URL = "http://localhost:5000";
 let socket: Socket | null = null;
@@ -15,10 +16,13 @@ const initializeSocket = (accessToken: string) => {
 
   socket.on("connect", () => {
     console.log("Socket connected");
+    store.dispatch(setSocketConnected(true));
+
   });
 
   socket.on("disconnect", (reason) => {
     console.log("Socket disconnected:", reason);
+    store.dispatch(setSocketConnected(false));
   });
 
   socket.connect();
@@ -29,6 +33,7 @@ store.subscribe(() => {
   const state = store.getState();
   const currentAccessToken = state.auth?.accessToken;
   const userData = state.auth?.userData;
+  // console.log('store currentAccessToken --------> ', currentAccessToken, userData)
 
   if (currentAccessToken !== previousAccessToken) {
     previousAccessToken = currentAccessToken;

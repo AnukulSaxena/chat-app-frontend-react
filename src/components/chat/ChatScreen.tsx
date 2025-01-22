@@ -19,7 +19,6 @@ export default function ChatScreen() {
     ]);
     setInputValue("");
 
-    // Simulate bot response
     setTimeout(() => {
       setMessages((prev) => [
         ...prev,

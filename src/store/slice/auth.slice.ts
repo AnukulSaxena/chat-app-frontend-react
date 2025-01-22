@@ -15,6 +15,7 @@ const initialState: UserState = {
   refreshToken: null,
   sessionId: null,
   accessToken: null,
+
 };
 
 // Centralized reset function
