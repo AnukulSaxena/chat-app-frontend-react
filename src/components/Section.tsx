@@ -8,7 +8,7 @@ const Section = () => {
   const dispatch = useAppDispatch();
 
   const { userData } = useAppSelector((state) => state.auth);
-  const { chats } = useAppSelector((state) => state.chat);
+  const { chats, activeChat } = useAppSelector((state) => state.chat);
 
   useEffect(() => {
     if (!userData) return;
@@ -21,9 +21,7 @@ const Section = () => {
           <SingleChat key={index} chat={chat} />
         ))}
       </div>
-      <div className="w-full">
-        <ChatScreen />
-      </div>
+      <div className="w-full">{activeChat && <ChatScreen/>}</div>
     </div>
   );
 };
