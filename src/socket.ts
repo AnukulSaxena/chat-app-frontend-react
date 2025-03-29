@@ -4,9 +4,10 @@ import { setSocketConnected } from "./store/slice/user.slice";
 
 const URL = "http://localhost:5000";
 let socket: Socket | null = null;
+let count = 0;
+let isSocketConnected = false;
 
 const initializeSocket = (accessToken: string) => {
-    console.log('initi -> ', accessToken)
   socket = io(URL, {
     auth: {
       token: accessToken,
@@ -15,33 +16,50 @@ const initializeSocket = (accessToken: string) => {
   });
 
   socket.on("connect", () => {
-    console.log("Socket connected");
+      console.log("connected to socket", count++);
     store.dispatch(setSocketConnected(true));
-
+    isSocketConnected = true;
   });
 
-  socket.on("disconnect", (reason) => {
-    console.log("Socket disconnected:", reason);
+  socket.on("disconnect", () => {
     store.dispatch(setSocketConnected(false));
+    isSocketConnected = false;
   });
 
   socket.connect();
 };
 
 let previousAccessToken: string | null = null;
-store.subscribe(() => {
-  const state = store.getState();
-  const currentAccessToken = state.auth?.accessToken;
-  const userData = state.auth?.userData;
-  // console.log('store currentAccessToken --------> ', currentAccessToken, userData)
+let hasInitialized = false;
+let debounceTimeout: NodeJS.Timeout | null = null;
 
-  if (currentAccessToken !== previousAccessToken) {
-    previousAccessToken = currentAccessToken;
+if (!hasInitialized) {
+  store.subscribe(() => {
+    const state = store.getState();
+    const currentAccessToken = state.auth?.accessToken;
+    const userData = state.auth?.userData;
 
-    if (userData && currentAccessToken && (!socket || !socket.connected)) {
-      initializeSocket(currentAccessToken);
+    if (currentAccessToken !== previousAccessToken) {
+      previousAccessToken = currentAccessToken;
+
+      if (socket) {
+        socket.disconnect();
+        socket = null;
+      }
+
+      if (userData && currentAccessToken && !isSocketConnected) {
+        if (debounceTimeout) {
+          clearTimeout(debounceTimeout);
+        }
+
+        debounceTimeout = setTimeout(() => {
+          initializeSocket(currentAccessToken);
+          debounceTimeout = null;
+        }, 200);
+      }
     }
-  }
-});
+  });
+  hasInitialized = true;
+}
 
 export { socket };

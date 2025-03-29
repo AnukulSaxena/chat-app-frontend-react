@@ -7,16 +7,19 @@ import { Button } from "../ui/button";
 import { logoutUser } from "@/store/action/user.action";
 import { clearChats } from "@/store/slice/chat.slice";
 import { socket } from "@/socket";
+import { useEffect } from "react";
 
 const Header: React.FC = () => {
   const dispatch = useAppDispatch();
   const { userData, sessionId } = useAppSelector((state) => state.auth);
   const { isSocketConnected } = useAppSelector((state) => state.user);
 
+
+
   const handleLogout = (userName: string, sessionId: string) => {
     dispatch(logoutUser({ userName, sessionId }));
     dispatch(clearChats());
-    if(socket){
+    if (socket) {
       socket.disconnect();
     }
   };
