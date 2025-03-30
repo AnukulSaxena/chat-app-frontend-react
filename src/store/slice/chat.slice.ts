@@ -2,18 +2,25 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 // import type { PayloadAction } from "@reduxjs/toolkit";
 import { toast } from "sonner";
 import { Chat } from "@/schemas/chat/chat.schema";
-import { getUserChats } from "../action/chat.action";
+import { getChatMessages, getUserChats } from "../action/chat.action";
+import { Message } from "@/schemas/message/message.schema";
 
 export interface ChatState {
   chats: Chat[];
   totalPages: number;
   activeChat: Chat | null;
+  messages: Message[];
+  loading: boolean;
+  error: string | null;
 }
 
 const initialState: ChatState = {
   chats: [],
   totalPages: 0,
-  activeChat: null
+  activeChat: null,
+  messages: [],
+  loading: false,
+  error: null,
 };
 
 export const chatSlice = createSlice({
@@ -23,9 +30,31 @@ export const chatSlice = createSlice({
     clearChats: (state) => {
       state.chats = [];
     },
-    setActiveChat: (state,action: PayloadAction<Chat>) => {
+    setActiveChat: (state, action: PayloadAction<Chat>) => {
       state.activeChat = action.payload;
-    }
+    },
+    handleMessage: (state, action: PayloadAction<Message>) => {
+      const message = action.payload;
+      const index = state.chats.findIndex((chat) => chat._id === message.chat);
+      
+      if(index >= 0){
+        const chat = state.chats[index];
+        chat.lastMessage = message.text;
+
+        state.chats = [
+          ...state.chats.slice(0, index),
+          { ...chat },
+          ...state.chats.slice(index + 1),
+        ];
+      }
+
+      if (state.activeChat?._id === message.chat) {
+        state.messages = [...state.messages, message];
+      }
+    },
+    clearMessages: (state) => {
+      state.messages = [];
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -41,11 +70,27 @@ export const chatSlice = createSlice({
       .addCase(getUserChats.rejected, (_, action) => {
         if (typeof action.payload === "string") toast(action.payload);
         else toast("Uh oh! Something went wrong.");
-      });
+      })
+      .addCase(getChatMessages.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getChatMessages.fulfilled, (state, action) => {
+        state.loading = false;
+        const { data } = action.payload;
+        state.messages = data;
+      })
+      .addCase(
+        getChatMessages.rejected,
+        (state, action: PayloadAction<any>) => {
+          state.loading = false;
+          state.error = action.payload;
+        }
+      );
   },
 });
 
 // Action creators are generated for each case reducer function
-export const { clearChats, setActiveChat } = chatSlice.actions;
+export const { clearChats, setActiveChat, clearMessages, handleMessage } = chatSlice.actions;
 
 export default chatSlice.reducer;

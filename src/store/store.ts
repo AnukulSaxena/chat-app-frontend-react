@@ -17,7 +17,7 @@ export const store = configureStore({
   reducer: {
     user: userReducer,
     auth: persistedReducer,
-    chat: chatReducer
+    chat: chatReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

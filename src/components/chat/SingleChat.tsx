@@ -22,7 +22,7 @@ const SingleChat = (props: { chat: Chat }) => {
         <h1 className="text-lg font-semibold">{chatName}</h1>
         <p className="text-sm text-neutral-500"> some time here</p>
       </div>
-      <p className="text-sm text-neutral-500">someMessage</p>
+      <p className="text-sm text-neutral-500">{chat.lastMessage ? chat.lastMessage : "last message"}</p>
     </div>
   );
 };

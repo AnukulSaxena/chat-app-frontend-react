@@ -1,60 +1,35 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
-import { useAppSelector } from "@/store/store";
+import { useAppDispatch, useAppSelector } from "@/store/store";
 import { socket } from "@/socket";
+import { Message } from "@/schemas/message/message.schema";
+import { getChatMessages } from "@/store/action/chat.action";
+import { clearMessages } from "@/store/slice/chat.slice";
 
 export default function ChatScreen() {
-  const { activeChat } = useAppSelector((state) => state.chat);
-  const { isSocketConnected } = useAppSelector((state) => state.user);
-  if (!activeChat) return null;
+  const dispatch = useAppDispatch();
 
+  const { activeChat, messages, loading } = useAppSelector(
+    (state) => state.chat
+  );
+  const { userData } = useAppSelector((state) => state.auth);
+
+  if (!activeChat || !userData) return null;
 
   const [inputValue, setInputValue] = useState("");
   const [chatName, setChatName] = useState("");
-  const [counter, setCounter] = useState(0);
-  const [chats, setChats] = useState<string[]>([]);
 
-  // const handleSendMessage = () => {
-  //   if (inputValue.trim() === "") return;
-
-  //   setMessages([
-  //     ...messages,
-  //     { id: messages.length + 1, user: "user", text: inputValue },
-  //   ]);
-  //   setInputValue("");
-
-  //   setTimeout(() => {
-  //     setMessages((prev) => [
-  //       ...prev,
-  //       {
-  //         id: prev.length + 1,
-  //         user: "bot",
-  //         text: "Sure! What do you need help with?",
-  //       },
-  //     ]);
-  //   }, 1000);
-  // };
+  const chatMessagesRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!activeChat.isGroup && activeChat.users.length > 0) {
       setChatName(activeChat.users[0].userName);
     }
+    console.log("chatinve", activeChat);
+    dispatch(clearMessages());
+    dispatch(getChatMessages(activeChat._id));
   }, [activeChat]);
-
-  useEffect(() => {
-    if (!socket || !isSocketConnected) return;
-    socket.on("message", (data: any) => {
-      console.log(data);
-      console.log(counter);
-      setCounter(prev => prev + 1)
-      setChats(prev => [...prev, data.message]);
-    });
-
-    return () => {
-      if (socket && isSocketConnected) socket.off("message");
-    };
-  }, [isSocketConnected]);  
 
   const sendMessage = () => {
     if (inputValue.trim() === "") return;
@@ -74,19 +49,41 @@ export default function ChatScreen() {
     }
   };
 
+  useEffect(() => {
+    if (chatMessagesRef.current) {
+      chatMessagesRef.current.scrollTop = chatMessagesRef.current.scrollHeight;
+    }
+  }, [messages]);
+
   return (
-    <div className="flex flex-col h-full bg-neutral-900">
+    <div className="flex flex-col justify-between max-h-full bg-neutral-900">
       {/* Chat Header */}
       <header className="p-4 bg-neutral-950 text-lg font-semibold">
         {chatName}
       </header>
 
+      <div className=" flex-1 overflow-y-auto" ref={chatMessagesRef}>
       {/* Chat Messages */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
-{
-  chats.map((chat) => (<div>{chat}</div>))
-}
-       
+      {loading ? (
+        <p>Loading...</p>
+      ) : (
+        <div className="flex flex-col p-4">
+          {messages.map((message: Message) => (
+            <div
+              key={message._id}
+              className={`rounded-xl p-2 mb-1 max-w-[70%] break-words
+                ${
+                  message.sender === userData._id
+                    ? "bg-green-700 text-gray-100 light:bg-green-500 light:text-white self-end"
+                    : "bg-gray-700 text-gray-300 light:bg-gray-100 light:text-black self-start"
+                }
+              `}
+            >
+              {message.text}
+            </div>
+          ))}
+        </div>
+      )}
       </div>
 
       {/* Input Box */}

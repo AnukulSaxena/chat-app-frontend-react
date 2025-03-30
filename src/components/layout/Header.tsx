@@ -5,14 +5,28 @@ import LoginForm from "../auth/LoginForm";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 import { Button } from "../ui/button";
 import { logoutUser } from "@/store/action/user.action";
-import { clearChats } from "@/store/slice/chat.slice";
+import { clearChats, handleMessage } from "@/store/slice/chat.slice";
 import { socket } from "@/socket";
 import { useEffect } from "react";
+import { messageSchema } from "@/schemas/message/message.schema";
 
 const Header: React.FC = () => {
   const dispatch = useAppDispatch();
   const { userData, sessionId } = useAppSelector((state) => state.auth);
   const { isSocketConnected } = useAppSelector((state) => state.user);
+
+
+  useEffect(() => {
+    if (!socket || !isSocketConnected) return;
+    socket.on("message", (data: any) => {
+      const message = messageSchema.parse(data);
+      dispatch(handleMessage(message));
+    });
+
+    return () => {
+      if (socket && isSocketConnected) socket.off("message");
+    };
+  }, [isSocketConnected]);
 
 
 
