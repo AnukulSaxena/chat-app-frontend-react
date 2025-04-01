@@ -16,7 +16,7 @@ const Section = () => {
   }, [userData]);
   return (
     <div className=" flex h-full">
-      <div className="w-96 space-y-2 border-r-2 border-neutral-200 p-4 min-h-full">
+      <div className="w-96 space-y-2 border-r-2 border-neutral-200 p-4 ">
         {chats.map((chat, index) => (
           <SingleChat key={index} chat={chat} />
         ))}

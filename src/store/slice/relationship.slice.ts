@@ -1,17 +1,20 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { toast } from "sonner";
-import { createRelationship } from "../action/relationship.action";
+import { createRelationship, getFriends } from "../action/relationship.action";
+import { FriendsDetails } from "@/schemas/relation/relation.schema";
 
 export interface UserState {
   isRequestSent: boolean;
+  friends: FriendsDetails[];
 }
 
 const initialState: UserState = {
   isRequestSent: false,
+  friends: []
 };
 
 export const relationShipSlice = createSlice({
-  name: "auth",
+  name: "relation",
   initialState,
   reducers: {
 
@@ -31,7 +34,9 @@ export const relationShipSlice = createSlice({
    .addCase(createRelationship.rejected, (state) => {
      state.isRequestSent = false;
      toast("Uh oh! Something went wrong.");
-   });
+   }).addCase(getFriends.fulfilled, (state, action) => {
+    state.friends = action.payload;
+   })
   },
 });
 

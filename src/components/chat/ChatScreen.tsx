@@ -56,13 +56,13 @@ export default function ChatScreen() {
   }, [messages]);
 
   return (
-    <div className="flex flex-col justify-between max-h-full bg-neutral-900">
+    <div className="flex flex-col justify-between bg-neutral-900">
       {/* Chat Header */}
       <header className="p-4 bg-neutral-950 text-lg font-semibold">
         {chatName}
       </header>
 
-      <div className=" flex-1 overflow-y-auto" ref={chatMessagesRef}>
+      <div className=" max-h-96 overflow-y-auto" ref={chatMessagesRef}>
       {/* Chat Messages */}
       {loading ? (
         <p>Loading...</p>

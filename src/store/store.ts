@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import userReducer from './slice/user.slice'
 import authReducer from './slice/auth.slice'
 import chatReducer from './slice/chat.slice'
+import relationshipReducer from './slice/relationship.slice'
 import { FLUSH, PAUSE, PERSIST, persistReducer, persistStore, PURGE, REGISTER, REHYDRATE } from 'redux-persist'
 import storage from 'redux-persist/lib/storage' 
 import { setStore } from '@/utils/interceptor';
@@ -18,6 +19,7 @@ export const store = configureStore({
     user: userReducer,
     auth: persistedReducer,
     chat: chatReducer,
+    relation: relationshipReducer
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

@@ -1,3 +1,5 @@
+import { z } from "zod";
+
 export enum RelationshipStatus {
     Pending = 'pending',
     Confirmed = 'confirmed',
@@ -18,3 +20,14 @@ export enum RelationshipStatus {
     ReceivedRequest = 'receivedRequest',
     None = 'none',
   }
+
+export const friendsDetailsSchema = z.object({
+  _id: z.string(),
+  status: z.literal('confirmed'),
+  userName: z.string(),
+  userId: z.string(),
+});
+
+export type FriendsDetails = z.infer<typeof friendsDetailsSchema>;
+
+export const friendDetailsResponseSchema = z.array(friendsDetailsSchema);

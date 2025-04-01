@@ -9,11 +9,20 @@ import { clearChats, handleMessage } from "@/store/slice/chat.slice";
 import { socket } from "@/socket";
 import { useEffect } from "react";
 import { messageSchema } from "@/schemas/message/message.schema";
+import { getFriends } from "@/store/action/relationship.action";
 
 const Header: React.FC = () => {
   const dispatch = useAppDispatch();
   const { userData, sessionId } = useAppSelector((state) => state.auth);
   const { isSocketConnected } = useAppSelector((state) => state.user);
+  const { friends} = useAppSelector(state => state.relation);
+  console.log(friends)
+
+  useEffect(() => {
+    if(userData){
+      dispatch(getFriends());
+    }
+  },[userData])
 
 
   useEffect(() => {
