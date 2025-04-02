@@ -1,5 +1,6 @@
 import { getChatSchema } from "@/schemas/chat/chat.schema";
 import { messageResponseSchema } from "@/schemas/message/message.schema";
+import api from "@/utils/interceptor";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
@@ -32,8 +33,8 @@ export const getUserChats = createAsyncThunk(
       { rejectWithValue }
     ) => {
       try {
-        const response = await axios.get(
-          `http://localhost:5000/chat/${userId}`
+        const response = await api.get(
+          `/chat/${userId}`
         );
         const parsedData = getChatSchema.parse(response?.data);
         return {data : parsedData.data, userId};

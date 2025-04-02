@@ -7,7 +7,7 @@ import { Button } from "../ui/button";
 import { logoutUser } from "@/store/action/user.action";
 import { clearChats, handleMessage } from "@/store/slice/chat.slice";
 import { socket } from "@/socket";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { messageSchema } from "@/schemas/message/message.schema";
 import { getFriends } from "@/store/action/relationship.action";
 
@@ -15,8 +15,8 @@ const Header: React.FC = () => {
   const dispatch = useAppDispatch();
   const { userData, sessionId } = useAppSelector((state) => state.auth);
   const { isSocketConnected } = useAppSelector((state) => state.user);
-  const { friends} = useAppSelector(state => state.relation);
-  console.log(friends)
+  const [mode, setMode] = useState<"users" | "friends">("users");
+
 
   useEffect(() => {
     if(userData){
@@ -78,10 +78,19 @@ const Header: React.FC = () => {
                 Logout
               </Button>
               <Drawer>
-                <DrawerTrigger className=" bg-neutral-800 px-4 rounded-md">
+                <DrawerTrigger
+                  onClick={() => setMode("users")}
+                  className=" bg-neutral-800 px-4 rounded-md"
+                >
                   Users
                 </DrawerTrigger>
-                <BottomDrawer />
+                <DrawerTrigger
+                  onClick={() => setMode("friends")}
+                  className=" bg-neutral-800 px-4 rounded-md"
+                >
+                    Friends 
+                </DrawerTrigger>
+                <BottomDrawer mode={mode} />
               </Drawer>
             </>
           )}

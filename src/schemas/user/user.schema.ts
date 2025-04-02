@@ -41,6 +41,7 @@ export const RefreshTOkenSchema = z.object({
     accessToken : z.string(), 
     refreshToken : z.string(),
   }),
+  success: z.boolean(),
   message: z.string(),
 });
 

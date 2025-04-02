@@ -11,11 +11,13 @@ import { fetchUsers } from "@/store/action/user.action";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 import UserCard from "./UserCard";
 
-const BottomDrawer = () => {
+const BottomDrawer: React.FC<{mode: "users" | "friends"}> = ({mode}) => {
   
   const dispatch = useAppDispatch();
   const {userData} = useAppSelector(state => state.auth);
   const { users } = useAppSelector((state) => state.user);
+  const { friends} = useAppSelector(state => state.relation);
+  console.log(friends)
 
   useEffect(() => {
     if(!userData) return
@@ -25,8 +27,8 @@ const BottomDrawer = () => {
   return (
     <DrawerContent className="h-96">
       <DrawerHeader>
-        <DrawerTitle className="cursor-pointer" >Users</DrawerTitle>
-        <DrawerDescription>These are the users.</DrawerDescription>
+        <DrawerTitle className="cursor-pointer" >{mode === "users" ? "Users" : "Friends"}</DrawerTitle>
+        <DrawerDescription>{mode === "users" ? "These are the users." : "These are your friends."}</DrawerDescription>
       </DrawerHeader>
       <div className="flex gap-5 p-5 overflow-x-auto">
         {users.map((user, index) => (
