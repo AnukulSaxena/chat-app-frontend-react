@@ -12,7 +12,10 @@ const SingleChat = (props: { chat: Chat }) => {
     if (!chat.isGroup && chat.users.length > 0) {
       setChatName(chat.users[0].userName);
     }
+    else if(chat.isGroup && chat.groupName) {
+      setChatName(chat.groupName);}
   }, [chat]);
+  
   return (
     <div
       onClick={() => dispatch(setActiveChat(chat))}

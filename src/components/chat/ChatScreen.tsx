@@ -14,22 +14,39 @@ export default function ChatScreen() {
     (state) => state.chat
   );
   const { userData } = useAppSelector((state) => state.auth);
+  const { friends } = useAppSelector(state => state.relation);
 
   if (!activeChat || !userData) return null;
 
   const [inputValue, setInputValue] = useState("");
   const [chatName, setChatName] = useState("");
+  const [myFriends, setMyFriends] = useState(new Map());
 
   const chatMessagesRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    // Create a map of userId -> userName from friends data
+    const friendsMap = new Map();
+    friends.forEach(friend => {
+      friendsMap.set(friend.userId, friend.userName);
+    });
+    setMyFriends(friendsMap);
+  }, [friends]);
+
+  useEffect(() => {
     if (!activeChat.isGroup && activeChat.users.length > 0) {
-      setChatName(activeChat.users[0].userName);
+      // For one-on-one chats, use the friend's username from the map if available
+      const friendId = activeChat.users[0]._id;
+      const friendName = myFriends.get(friendId) || activeChat.users[0].userName;
+      setChatName(friendName);
+    } else if (activeChat.isGroup) {
+      // For group chats, use the group name
+      setChatName(activeChat.groupName || 'Group Chat');
     }
     console.log("chatinve", activeChat);
     dispatch(clearMessages());
     dispatch(getChatMessages(activeChat._id));
-  }, [activeChat]);
+  }, [activeChat, myFriends]);
 
   const sendMessage = () => {
     if (inputValue.trim() === "") return;
@@ -79,6 +96,11 @@ export default function ChatScreen() {
                 }
               `}
             >
+              {activeChat.isGroup && message.sender !== userData._id && (
+                <div className="text-xs font-semibold mb-1">
+                  {myFriends.get(message.sender) || 'Unknown User'}
+                </div>
+              )}
               {message.text}
             </div>
           ))}

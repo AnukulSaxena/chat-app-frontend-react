@@ -10,20 +10,27 @@ import { socket } from "@/socket";
 import { useEffect, useState } from "react";
 import { messageSchema } from "@/schemas/message/message.schema";
 import { getFriends } from "@/store/action/relationship.action";
+import CreateGroupDialog from "../dialog/CreateGroup";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "../ui/dropdown-menu";
 
 const Header: React.FC = () => {
   const dispatch = useAppDispatch();
   const { userData, sessionId } = useAppSelector((state) => state.auth);
   const { isSocketConnected } = useAppSelector((state) => state.user);
   const [mode, setMode] = useState<"users" | "friends">("users");
-
+  const [isCreateGroupOpen, setIsCreateGroupOpen] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   useEffect(() => {
-    if(userData){
+    if (userData) {
       dispatch(getFriends());
     }
-  },[userData])
-
+  }, [userData]);
 
   useEffect(() => {
     if (!socket || !isSocketConnected) return;
@@ -37,14 +44,17 @@ const Header: React.FC = () => {
     };
   }, [isSocketConnected]);
 
-
-
   const handleLogout = (userName: string, sessionId: string) => {
     dispatch(logoutUser({ userName, sessionId }));
     dispatch(clearChats());
     if (socket) {
       socket.disconnect();
     }
+  };
+
+  const handleCreateGroup = () => {
+    setIsDropdownOpen(false);
+    setIsCreateGroupOpen(true);
   };
 
   return (
@@ -84,14 +94,28 @@ const Header: React.FC = () => {
                 >
                   Users
                 </DrawerTrigger>
-                <DrawerTrigger
+                {/* <DrawerTrigger
                   onClick={() => setMode("friends")}
                   className=" bg-neutral-800 px-4 rounded-md"
                 >
                     Friends 
-                </DrawerTrigger>
+                </DrawerTrigger> */}
                 <BottomDrawer mode={mode} />
               </Drawer>
+              <DropdownMenu open={isDropdownOpen} onOpenChange={setIsDropdownOpen}>
+                <DropdownMenuTrigger asChild>
+                  <Button>More</Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  <DropdownMenuItem onSelect={handleCreateGroup}>
+                    Create Group
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+              <CreateGroupDialog
+                open={isCreateGroupOpen}
+                onOpenChange={setIsCreateGroupOpen}
+              />
             </>
           )}
         </div>

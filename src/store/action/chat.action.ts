@@ -4,62 +4,65 @@ import api from "@/utils/interceptor";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
-
 export const createSingleChat = createAsyncThunk(
-    "chat/create",
-    async (
-      users: { fromUserId: string; toUserId: string },
-      { rejectWithValue , }
-    ) => {
-      try {
-        const response = await axios.post(
-          "http://localhost:5000/chat",
-          users
-        );
-        return response?.data;
-      } catch (error: any) {
-        return rejectWithValue(
-          error?.response?.data || "An error occurred while creating the user"
-        );
-      }
+  "chat/create",
+  async (
+    users: { fromUserId: string; toUserId: string },
+    { rejectWithValue }
+  ) => {
+    try {
+      const response = await axios.post("http://localhost:5000/chat", users);
+      return response?.data;
+    } catch (error: any) {
+      return rejectWithValue(
+        error?.response?.data || "An error occurred while creating the user"
+      );
     }
-  );
+  }
+);
 
+export const createGroupChat = createAsyncThunk(
+  "chat/create",
+  async (data: { groupName: string; users: string[] }, { rejectWithValue }) => {
+    try {
+      const response = await api.post("/chat/group", data);
+      return response?.data;
+    } catch (error: any) {
+      return rejectWithValue(
+        error?.response?.data || "An error occurred while creating the user"
+      );
+    }
+  }
+);
 
 export const getUserChats = createAsyncThunk(
-    "chat/getUserChats",
-    async (
-      userId: string,
-      { rejectWithValue }
-    ) => {
-      try {
-        const response = await api.get(
-          `/chat/${userId}`
-        );
-        const parsedData = getChatSchema.parse(response?.data);
-        return {data : parsedData.data, userId};
-      } catch (error: any) {
-        return rejectWithValue(
-          error?.response?.data || "An error occurred while fetching the user"
-        );
-      }
+  "chat/getUserChats",
+  async (userId: string, { rejectWithValue }) => {
+    try {
+      const response = await api.get(`/chat/${userId}`);
+      const parsedData = getChatSchema.parse(response?.data);
+      return { data: parsedData.data, userId };
+    } catch (error: any) {
+      return rejectWithValue(
+        error?.response?.data || "An error occurred while fetching the user"
+      );
     }
-  );
+  }
+);
 
-
-  export const getChatMessages = createAsyncThunk(
-    "chat/getChatMessages",
-    async (chatId: string, { rejectWithValue }) => {
-      try {
-        const response = await axios.get(
-          `http://localhost:5000/message/chat/${chatId}`
-        );
-        const parsedData = messageResponseSchema.parse(response?.data);
-        return parsedData;
-      } catch (error: any) {
-        return rejectWithValue(
-          error?.response?.data || "An error occurred while fetching the user"
-        );
-      }
+export const getChatMessages = createAsyncThunk(
+  "chat/getChatMessages",
+  async (chatId: string, { rejectWithValue }) => {
+    try {
+      const response = await axios.get(
+        `http://localhost:5000/message/chat/${chatId}`
+      );
+      const parsedData = messageResponseSchema.parse(response?.data);
+      return parsedData;
+    } catch (error: any) {
+      return rejectWithValue(
+        error?.response?.data || "An error occurred while fetching the user"
+      );
     }
-  );
+  }
+);

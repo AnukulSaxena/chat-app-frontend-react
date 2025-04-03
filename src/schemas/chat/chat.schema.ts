@@ -4,6 +4,7 @@ export const ChatSchema =  z.object({
     _id: z.string(),
     isGroup: z.boolean(),
     lastMessage: z.optional(z.string()),
+    groupName: z.optional(z.string()),
     users: z.array(
       z.object({
         _id: z.string(),

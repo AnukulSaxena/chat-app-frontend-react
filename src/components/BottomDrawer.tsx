@@ -16,8 +16,6 @@ const BottomDrawer: React.FC<{mode: "users" | "friends"}> = ({mode}) => {
   const dispatch = useAppDispatch();
   const {userData} = useAppSelector(state => state.auth);
   const { users } = useAppSelector((state) => state.user);
-  const { friends} = useAppSelector(state => state.relation);
-  console.log(friends)
 
   useEffect(() => {
     if(!userData) return
