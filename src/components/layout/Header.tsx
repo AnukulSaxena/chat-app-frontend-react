@@ -35,6 +35,7 @@ const Header: React.FC = () => {
   useEffect(() => {
     if (!socket || !isSocketConnected) return;
     socket.on("message", (data: any) => {
+      console.log(data);
       const message = messageSchema.parse(data);
       dispatch(handleMessage(message));
     });

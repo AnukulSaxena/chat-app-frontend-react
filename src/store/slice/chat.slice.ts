@@ -36,8 +36,8 @@ export const chatSlice = createSlice({
     handleMessage: (state, action: PayloadAction<Message>) => {
       const message = action.payload;
       const index = state.chats.findIndex((chat) => chat._id === message.chat);
-      
-      if(index >= 0){
+
+      if (index >= 0) {
         const chat = state.chats[index];
         chat.lastMessage = message.text;
 
@@ -49,11 +49,26 @@ export const chatSlice = createSlice({
       }
 
       if (state.activeChat?._id === message.chat) {
-        state.messages = [...state.messages, message];
+        const pendingMessageIndex = [...state.messages].findIndex(
+          (msg) => msg.timeStamp === message.timeStamp
+        );
+        console.log("peesd", pendingMessageIndex)
+        if (pendingMessageIndex !== -1) {
+          const updatedMessages = [...state.messages];
+          updatedMessages[pendingMessageIndex] = {
+            ...message, 
+            timeStamp: undefined
+          };
+          state.messages = updatedMessages;
+        }
       }
     },
     clearMessages: (state) => {
       state.messages = [];
+    },
+
+    addMessage: (state, action: PayloadAction<Message>) => {
+      state.messages = [...state.messages, action.payload];
     },
   },
   extraReducers: (builder) => {
@@ -91,6 +106,6 @@ export const chatSlice = createSlice({
 });
 
 // Action creators are generated for each case reducer function
-export const { clearChats, setActiveChat, clearMessages, handleMessage } = chatSlice.actions;
+export const { clearChats, setActiveChat, clearMessages, handleMessage, addMessage } = chatSlice.actions;
 
 export default chatSlice.reducer;

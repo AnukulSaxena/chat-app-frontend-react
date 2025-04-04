@@ -12,7 +12,8 @@ const initializeSocket = (accessToken: string) => {
     auth: {
       token: accessToken,
     },
-    autoConnect: false,
+    withCredentials: true,
+    autoConnect: false, 
   });
 
   socket.on("connect", () => {

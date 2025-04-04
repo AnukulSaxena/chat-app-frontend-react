@@ -5,7 +5,7 @@ import { useAppDispatch, useAppSelector } from "@/store/store";
 import { socket } from "@/socket";
 import { Message } from "@/schemas/message/message.schema";
 import { getChatMessages } from "@/store/action/chat.action";
-import { clearMessages } from "@/store/slice/chat.slice";
+import { addMessage, clearMessages } from "@/store/slice/chat.slice";
 
 export default function ChatScreen() {
   const dispatch = useAppDispatch();
@@ -50,13 +50,20 @@ export default function ChatScreen() {
 
   const sendMessage = () => {
     if (inputValue.trim() === "") return;
-
+    console.log("inputValue", Date.now().toString());
+    dispatch(addMessage({
+      chat: activeChat._id,
+      sender: userData._id,
+      text: inputValue,
+      timeStamp: Date.now().toString(),
+    }));
     if (socket) {
       const messagePayload = {
         receiver: activeChat.users.length > 0 ? activeChat.users[0]._id : null,
         isGroup: activeChat.isGroup,
         chatId: activeChat._id,
         message: inputValue,
+        timeStamp: Date.now().toString(),
       };
       console.log("emitting");
       socket.emit("message", messagePayload);
@@ -80,32 +87,31 @@ export default function ChatScreen() {
       </header>
 
       <div className=" max-h-96 overflow-y-auto" ref={chatMessagesRef}>
-      {/* Chat Messages */}
-      {loading ? (
-        <p>Loading...</p>
-      ) : (
-        <div className="flex flex-col p-4">
-          {messages.map((message: Message) => (
-            <div
-              key={message._id}
-              className={`rounded-xl p-2 mb-1 max-w-[70%] break-words
-                ${
-                  message.sender === userData._id
+        {/* Chat Messages */}
+        {loading ? (
+          <p>Loading...</p>
+        ) : (
+          <div className="flex flex-col p-4">
+            {messages.map((message: Message, index: number) => (
+              <div
+                key={message._id || index}
+                className={`rounded-xl p-2 mb-1 max-w-[70%] break-words
+                ${message.sender === userData._id
                     ? "bg-green-700 text-gray-100 light:bg-green-500 light:text-white self-end"
                     : "bg-gray-700 text-gray-300 light:bg-gray-100 light:text-black self-start"
-                }
+                  }
               `}
-            >
-              {activeChat.isGroup && message.sender !== userData._id && (
-                <div className="text-xs font-semibold mb-1">
-                  {myFriends.get(message.sender) || 'Unknown User'}
-                </div>
-              )}
-              {message.text}
-            </div>
-          ))}
-        </div>
-      )}
+              >
+                {activeChat.isGroup && message.sender !== userData._id && (
+                  <div className="text-xs font-semibold mb-1">
+                    {myFriends.get(message.sender) || 'Unknown User'}
+                  </div>
+                )}
+                {message.text} {message.timeStamp ? `(${message.timeStamp})` : ''}
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Input Box */}
